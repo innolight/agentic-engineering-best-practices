@@ -4,12 +4,19 @@ Discover best practices for Agentic Engineering from first principles. Agentic e
 
 # First Principles
 
-## Treating Context as Finite, Degrading Resource
+1. [Context Engineering](#context-engineering)
+2. Specification Before Generation
+3. Tame Hallucinations
+4. Compound Knowledge
+5. Secure By Design
 
-**The truth:** AI Agent performance is a function of what's in the context window - and performance degrades non-linearly as context fills. Managing context is not a secondary concern; it is the primary engineering challenge of agentic workflows.
+
+## Context Engineering
+
+**The truth:** AI Agent performance is a function of what's in the finite context window - and performance degrades non-linearly as context fills. Managing context is not a secondary concern; it is the primary engineering challenge of agentic workflows. 
 
 **Evidence**
-- Anthropic's official Claude Code documentation states it directly: "Most best practices are based on one constraint: Claude's context window fills up fast, and performance degrades as it fills."
+- Anthropic's official docs states it directly: "Most best practices are based on one constraint: Claude's context window fills up fast, and performance degrades as it fills."
 - The "lost-in-the-middle" phenomenon — where models lose factual precision near maximum capacity — is well-documented in research. 
 
 ### Best practices
