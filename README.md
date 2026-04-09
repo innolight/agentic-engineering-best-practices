@@ -1,8 +1,6 @@
 # Agentic Engineering Best Practices
 
-This project discover best practices for Agentic Engineering from first principles.
-
-Agentic engineering is the professional practice of orchestrating AI agents to implement software, shifting the human developer's role from manually writing code to directing specification, architecture, oversight, and quality control.
+Discover best practices for Agentic Engineering from first principles. Agentic engineering is the professional practice of orchestrating AI agents to implement software, shifting the human developer's role from manually writing code to directing specification, architecture, oversight, and quality control.
 
 # First Principles
 
