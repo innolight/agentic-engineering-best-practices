@@ -1,21 +1,20 @@
 # Agentic Engineering Best Practices
 
-This project discover best practices for Agentic Engineering from first principals.
+This project discover best practices for Agentic Engineering from first principles.
 
 Agentic engineering is the professional practice of orchestrating AI agents to implement software, shifting the human developer's role from manually writing code to directing specification, architecture, oversight, and quality control.
 
-# Principals
+# First Principles
 
 ## Treating Context as Finite, Degrading Resource
 
-**The truth:** AI Agent performance is a function of what's in the context window — and performance degrades non-linearly as context fills. Managing context is not a secondary concern; it is the primary engineering challenge of agentic workflows.
+**The truth:** AI Agent performance is a function of what's in the context window - and performance degrades non-linearly as context fills. Managing context is not a secondary concern; it is the primary engineering challenge of agentic workflows.
 
-**References**
+**Evidence**
 - Anthropic's official Claude Code documentation states it directly: "Most best practices are based on one constraint: Claude's context window fills up fast, and performance degrades as it fills."
 - The "lost-in-the-middle" phenomenon — where models lose factual precision near maximum capacity — is well-documented in research. 
 
-### Contemporary practices
-
+### Best practices
 
 **Progressive Disclosure Principle.** Instead of a monolithic instruction file, layer instructions by scope — a root file (universal, high-signal rules), subdirectory files ( domain-specific rules, examples, references), and **on-demand skills/rules** (loaded only when relevant) - so agents receive only what they need, when they need it.
 
@@ -36,8 +35,8 @@ rather than waiting for degradation symptoms like hallucinations or ignored inst
 
 **The multi-tier memory model.** a *hot tier* (AGENT.md, compact, loaded every session), a *warm tier* (docs/ directory - enduring knowledge), and a *cold tier* (archived specs, plans, decision records).
 
-**Reducing Input token**: 
+**Reducing Input token**: through proxies:
  - [rtk](https://github.com/rtk-ai/rtk) - filter and compress CLI outputs
  - [headroom](https://github.com/chopratejas/headroom) - intercepts LLM requests, compresses the context, and forwards an optimized prompt
 
-**Cutting Output tokens.** Instruction for communicating concisely. For example, [caveman](https://github.com/JuliusBrussee/caveman) skill.
+**Reducing Output tokens** by instruction for communicating concisely. For example, [caveman](https://github.com/JuliusBrussee/caveman) skill.
