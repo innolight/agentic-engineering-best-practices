@@ -4,57 +4,108 @@ This project aims to distill the best practices for Agentic Engineering from the
 
 # First Principles
 
-1. [Context Engineering](#context-engineering) - treating context as finite cognitive workspace
-2. [Anti-hallucination Engineering](#anti-hallucination-engineering) - taming the probabilistic nature of LLMs
-3. Compound Engineering - enabling knowledge to compound in actions
+1. [Context Engineering Principle](#context-engineering): treat context as finite cognitive workspace; keep context focused, relevant, and grounded in reality.
+2. [Anti-hallucination Engineering Principle](#anti-hallucination-engineering): tame the probabilistic nature of LLMs through specification, decomposition, and verifications
+3. Compound Engineering Principle: Each unit of engineering work should make subsequent units easier, not harder.
 4. Secure By Design
-
 
 ## Context Engineering
 
-**The truth:** AI Agent performance is a function of what's in the finite context window - and performance degrades non-linearly as context fills. Managing context is not a secondary concern; it is the primary engineering challenge of agentic workflows. 
+**Context Engineering Principle**: treat context as finite cognitive workspace; keep context focused, relevant, and grounded in reality
+
+**The truth:** AI Agent performance is a function of what's in the finite context window - and performance degrades non-linearly as context fills. Managing context is the primary engineering challenge of agentic workflows. 
 
 **Research insights**
 - Anthropic's official docs: "Most best practices are based on one constraint: Claude's context window fills up fast, and performance degrades as it fills."
-- The "lost-in-the-middle" phenomenon — where models lose factual precision near maximum capacity — is well-documented in research. 
+- The "lost-in-the-middle" phenomenon, where models lose factual precision near maximum capacity, is well-documented in research. 
 
-### Best practices
+### Pillars of Best Practices
 
-**Progressive disclosure**: instead of a monolithic instruction file, layer instructions by scope — a root file (universal, high-signal rules), subdirectory files ( domain-specific rules, examples, references), and **on-demand skills/rules** (loaded only when relevant) - so agents receive only what they need, when they need it.
+Context engineering decomposes into six pillars based on what goes into the agent's context window. Each pillar has distinct best practices for keeping context focused and grounded.
 
-- For AGENT/CLAUDE.md: keep [< 200 lines](https://code.claude.com/docs/en/memory#write-effective-instructions); reference useful docs for progressive disclosure; craft universally applicable instructions such as behavioural guidelines, project identity (why, what, how) - [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md). 
-- Keep SKILL.md < [500 lines](https://code.claude.com/docs/en/skills#add-supporting-files). Move detailed reference material to separate files (./examples, ./references, ./scripts)
+#### 1. User-Controlled System Prompts
 
-**Proactively manage context**: Monitor context utilization and act, rather than waiting for degradation symptoms like hallucinations or ignored instructions.
+Persistent instruction files (AGENTS.md / CLAUDE.md) the user maintains to ground agent behavior across sessions.
 
-- Scope each session to a single task; the "kitchen sink session" (mixing unrelated work) is the most common anti-pattern. A clean session with a precise prompt consistently outperforms a long session with accumulated corrections. 
+1. Keep < 200 lines - [claude](https://code.claude.com/docs/en/memory#write-effective-instructions). Less (instructions) is more (adherance).
 
-- Delegate investigative work (reading many files, exploring options) to subagents.
+2. Carefully craft concise, universally applicable instructions. Include behavioural guidelines, and project identity including WHY (purpose), WHAT (tech stack, project structure), HOW (command/instructiont to meaningful works)  - [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md).
 
-- Practical heuristic: at 0–50% context window utilization work freely, at 50–70% pay attention, at 70–90% run compaction, at 90%+ a fresh session is mandatory.
+3. Skips what the model already knows or what linters enforce - [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md)
 
-- In Claude Code: `/clear` between unrelated tasks and start fresh, `/rename` to give current session a good name before clearing ,`/compact <focus>` with specific focus instructions, `/btw` for side-questions that don't enter history.
+4. Leverage progressive disclosure, by telling agents how to find important information.
 
 
-**The multi-tier memory model.** a *hot tier* (AGENT.md, compact, loaded every session), a *warm tier* (docs/ directory - enduring knowledge), and a *cold tier* (archived specs, plans, decision records).
+#### 2. User Prompts
 
-**Reducing Input token**: through proxies:
- - [rtk](https://github.com/rtk-ai/rtk) - filter and compress CLI outputs
- - [headroom](https://github.com/chopratejas/headroom) - intercepts LLM requests, compresses the context, and forwards an optimized prompt
+The task-specific instructions users give to agents for each piece of work.
 
-**Reducing Output tokens** by instruction for communicating concisely. [caveman](https://github.com/JuliusBrussee/caveman) skill is an fun experiment at this.
+1. Provite as much context as possible. Specify what to change, where, how to verify, and what constraints apply. Ambiguity triggers the agent to fill gaps with training-data patterns rather than project-specific intent.
 
-**Reference-pattern anchoring.** Agents perform dramatically better when given concrete examples from the existing codebase rather than abstract descriptions.
+2. Use Interview-me pattern. Have the agent asks detailed questions about requirements, edge cases, and tradeoffs before producing a spec document. This inverts the typical prompt-response dynamic and produces far richer specifications.
+
+
+#### 3. Tools
+
+The executable capabilities agents invoke: bash, file editing, MCP servers, linters, test runners, etc.
+
+
+1. Prefer deterministic hooks over advisory instructions. Pre/post-tool hooks for linting, formatting, and type-checking execute regardless of what the agent "remembers". Never send an LLM to do a linter's job.
+
+2. Optimise tool output to be token efficient. For example, [rtk](https://github.com/rtk-ai/rtk) filter and compress verbose CLI outputs before they enter context.
+
+#### 4. Knowledge (Docs, Facts, Wikis)
+
+Domain-specific, project-specific, and technical information agents need: internal/external documentation, code examples, API specs, architectural decisions.
+
+1. **Maintain knowledge as living artifacts**.** Stale knowledge harms more than missing knowledge. Update docs when agent failures reveal incorrect or outdated information.
+
+2. Architectural Decision Records
+
+#### 5. Memories (Cross-Session Memory)
+
+Persistent state that accumulates across sessions: learned preferences, project context, past decisions.
+
+1. Leverage multi-tier memory system: Hot tier (loaded every session, <200 lines), warm tier (on-demand docs/), cold tier (archived records). Match access frequency to storage tier to prevent context bloat.
+
+2. Promote frequently-needed insights to hot tier, enduring references to warm tier, archive the rest. Prevent knowledge accumulation from becoming context pollution.
+
+3. Enforce structure on what gets stored (facts, decisions, patterns, warnings). Unstructured dumps of raw outputs cause more retrieval problems than they solve.
+
+4. Scratchpad extraction at task boundaries: when transitioning tasks or sessions, extract critical facts into condensed summaries. This extends agent operational lifespan before attention degradation.
+
+#### 6. Current Session History (Short-Term Memory)
+
+The conversation history, tool outputs, and accumulated state within the active session. The most volatile and fastest-growing part of context.
+
+1. Scope one task per session. Avoid the "kitchen sink session" anti-pattern. A clean session with a precise prompt consistently outperforms a long session with accumulated corrections. 
+
+2. Proactively manage context. Use heuristic: at 0–50% usage work freely, at 50–70% pay attention, at 70–90% run compaction, at 90%+ start fresh. Don't wait for degradation symptoms like hallucinations or ignored instructions.
+
+3. Delegate to subagent investigative/research work. Their tool outputs and reasoning stay out of your main session context, preserving working memory for the primary task.
+
+4. [Experimental] Intercept and compress the accumulated session context before it reaches the model (e.g., [headroom](https://github.com/chopratejas/headroom)). 
+
+5. [Experimental] Reduce output verbosity, by instruct agents to communicate concisely. Every token of output becomes input in the next turn, compounding context growth. ([caveman](https://github.com/JuliusBrussee/caveman) is a fun experiment at this.)
+
+Coding-agent practicalities:
+- In Claude Code: `/clear` between unrelated tasks and start fresh, `/rename` to give current session a good name before clearing ,`/compact <focus>` with spec ific focus instructions, `/btw` for side-questions that don't enter history.
 
 ## Anti-hallucination Engineering
 
-**The truth:** LLMs optimize for plausibility, not correctness. When a prompt is ambiguous, the model fills gaps with common patterns from training data rather than project-specific intent. Every practitioner report identifies premature coding as the dominant failure mode. The quality of agent output is bounded by the precision of the input specification and the rigor of the verification loop.
+**Anti-hallucination Engineering Principle**: tame the probabilistic/stochastic nature of LLMs through specification, decomposition, and verifications.
+
+**The truth:** LLMs optimize for plausibility, not correctness. When a prompt is ambiguous, the model fills gaps with common patterns from training data rather than project-specific intent. The quality of agent output is bounded by the precision of the input specification and the rigor of the verification loop. Premature coding is the dominant failure mode.
 
 **Research insights**
-- The Columbia University DAPLab found that agents "prioritize runnable code over correctness" — they generate something that compiles but silently ignores existing patterns, duplicates logic, or violates conventions.
+- The Columbia University DAPLab found that agents "prioritize runnable code over correctness." They generate something that compiles but silently ignores existing patterns, duplicates logic, or violates conventions.
 - The ACONIC framework (Wei et al., 2025) demonstrated that formalizing task specifications improved agent performance by **10–40 percentage points** on complex tasks.
 - Teams using AI without quality guardrails report a **35–40% increase in bug density** within six months (Qodo 2025).
 - Agents experience performance degradation after 35 minutes of human-equivalent time, with non-linear failure curve: doubling task duration quadruples the failure rate (Zylos Research, 2026).
+- 76% of developers are in the "red zone" (frequent hallucinations, low confidence) yet only 48% always check AI code before committing (Qodo 2025).
+- The "rubber-stamp" failure mode: an agent reviewing code systematically approves flawed logic because agreement is the path of least mathematical resistance in its training distribution.
+
+### Pillars of Best Bractices 
 
 This principle decomposes into three pillars of practice: Spec-Driven Development for precise specification at the input, structured decomposition in the middle, and rigorous verification at the output.
 
@@ -66,28 +117,24 @@ Structured Decomposition → creates subtasks small enough to verify
 Verification-Driven Autonomy → confirms each subtask matches the spec
 ```
 
-
 ### Spec-Driven Development (SDD)
 
-The agent should never generate code until what-to-build is unambiguous. Specifications are first-class artifacts that drive both implementation and verification — shifting the human role from writing code to writing precise intent. ThoughtWorks called SDD "one of the most important practices to emerge in 2025." 
-
-**Key insight:** "The issue isn't the agent's coding ability, but our approach. We treat coding agents like search engines when we should be treating them like literal-minded pair programmers." — GitHub Spec Kit
+The agent should never generate code until what-to-build is unambiguous.
+ThoughtWorks called SDD "one of the most important practices to emerge in 2025." 
 
 #### Best practices
 
-**Plan-then-implement separation.** The industry has converged on the canonical workflow: **Explore → Plan → Implement → Verify**. During exploration, the agent reads code and builds understanding without making changes. During planning, it produces a written artifact that the engineer reviews and annotates. Only after plan approval does implementation begin. The critical discipline is preventing the agent from writing code prematurely.
+- **Plan-then-implement separation.** The industry has converged on the canonical workflow: **Explore → Plan → Implement → Verify**. During exploration, the agent reads code and builds understanding without making changes. During planning, it produces a written artifact that the engineer reviews and annotates. Only after plan approval does implementation begin.
 
-**The interview pattern.** The agent asks the developer detailed questions about requirements, edge cases, and tradeoffs before producing a specification document. This inverts the typical prompt-response dynamic and produces far richer specifications.
+- **Interview-me pattern.** The agent asks the developer detailed questions about requirements, edge cases, and tradeoffs before producing a specification document. This inverts the typical prompt-response dynamic and produces far richer specifications.
 
-**Reference-pattern anchoring.** Agents perform dramatically better when given concrete examples from the existing codebase ("follow the pattern in X") rather than abstract descriptions. Concrete examples provide stronger conditioning signals than abstract instructions.
+- **Reference-pattern anchoring.** Agents perform dramatically better when given concrete examples from the existing codebase ("follow the pattern in X") rather than abstract descriptions. Concrete examples provide stronger conditioning signals than abstract instructions.
 
-**Specification as a living artifact.** Martin Fowler's team identifies three maturity levels: spec-first (written before coding), spec-anchored (maintained during development), and spec-as-source (the specification *is* the primary artifact, code is derived) - [article](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html)
+- **Specification as a living artifact.** Martin Fowler's team identifies three maturity levels: spec-first (written before coding), spec-anchored (maintained during development), and spec-as-source (the specification *is* the primary artifact, code is derived) - [article](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html)
 
 ### Structured Decomposition
 
-Agent failure rates scale non-linearly with task complexity. Breaking complex work into bounded, independently verifiable subtasks is the primary mechanism for keeping failure rates manageable — but decomposition has diminishing returns and should match task complexity.
-
-**Key insight:** SWE-bench Pro (multi-file, real-world complexity) caps the best models at ~23% vs ~79% on SWE-bench Verified. The gap is complexity. ChatDev's "chat chain" decomposition raised code quality from 0.15 to 0.40. But excessive decomposition increases coordination overhead (Amazon Science) and unstructured multi-agent networks amplify errors by up to 17.2x (Google, 2025).
+**The idea**: Agent failure rates scale non-linearly with task complexity. Breaking complex work into bounded, independently verifiable subtasks is the primary mechanism for keeping failure rates manageable. Beware, decomposition has diminishing returns and should match task complexity.
 
 #### Best practices
 
@@ -103,20 +150,16 @@ Agent failure rates scale non-linearly with task complexity. Breaking complex wo
 
 **The idea**: LLMs cannot reliably self-evaluate their own outputs. Environmental feedback - compilers, tests, linters - provides ground truth that no amount of internal reasoning can substitute. Autonomy must be earned through deterministic verification, not assumed through stochastic self-reflection.
 
-**Research insight**
-- 76% of developers are in the "red zone" — frequent hallucinations with low confidence — yet only 48% always check AI code before committing (Qodo 2025).
-- The "rubber-stamp" failure mode: an agent reviewing code systematically approves flawed logic because agreement is the path of least mathematical resistance in its training distribution.
-
 #### Best practices
 
-- **Multi-layer verification pipeline.** No single verification method catches all failure modes. Engineer multiple layers of deterministics verification: type checking → (unit/integration/e2e) tests → static analysis → formatting → linting → security scanning → human review. 
+- **Multi-layer verification pipeline.** No single verification method catches all failure modes. Multiple layers of deterministics verification are needed: type checking → (unit/integration/e2e) tests → static analysis → formatting → linting → security scanning → agents review → human review. 
 
-- **TDD - Test Driven Development.** Writing tests that assert the specification before implementation. Writing codes before write tests, you risk getting tests that assert the buggy behavior.
+- **TDD - Test Driven Development.** Tests anchor the specification, preventing agents from drifting into plausible-but-wrong code. Tests creates automated feedback loop for agent to self-correct against each iteration. Tests enforce creation of testable, thus maintainable design.
 
 - **Separate agent reviewers** (same or different models) catch problems more reliably than self-assessment. A fresh context window avoids biases accumulated during implementation.
 
-- **Continuous verification during implementation.** Run type checking, linting, formatting, and targeted tests after each meaningful change, not just at the end. Catch drift early before errors compound.
+- **Continuous verification during implementation.** Run type checking, linting, targeted tests,... after each meaningful change, not just at the end. Catch drift early before errors compound.
     - Hooks provide deterministic, automated enforcement that doesn't depend on what the agent "remembers".
 
-- **Atomic commits.** Commit after each verified, self-contained change. This creates rollback points, makes each change independently reviewable, and prevents the "big bang" merge where errors are entangled across files.
+- **Atomic commits**: each commit represents a single, self-contained, verified logical change to the codebase.
 
