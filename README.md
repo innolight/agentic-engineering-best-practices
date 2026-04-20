@@ -4,14 +4,14 @@ This project aims to distill the best practices for Agentic Engineering from the
 
 # First Principles
 
-1. [Context Engineering Principle](#context-engineering): treat context as finite cognitive workspace; keep context focused, relevant, and grounded in reality.
+1. [Context Engineering Principle](#context-engineering): treat context as finite cognitive workspace;
 2. [Anti-hallucination Engineering Principle](#anti-hallucination-engineering): tame the probabilistic nature of LLMs through specification, decomposition, and verifications
 3. Compound Engineering Principle: Each unit of engineering work should make subsequent units easier, not harder.
 4. Secure By Design
 
-## Context Engineering
+## Context Engineering Principle
 
-**Context Engineering Principle**: treat context as finite cognitive workspace; keep context focused, relevant, and grounded in reality
+**Principle**: treat context as finite cognitive workspace.
 
 **The truth:** AI Agent performance is a function of what's in the finite context window - and performance degrades non-linearly as context fills. Managing context is the primary engineering challenge of agentic workflows. 
 
@@ -19,77 +19,67 @@ This project aims to distill the best practices for Agentic Engineering from the
 - Anthropic's official docs: "Most best practices are based on one constraint: Claude's context window fills up fast, and performance degrades as it fills."
 - The "lost-in-the-middle" phenomenon, where models lose factual precision near maximum capacity, is well-documented in research. 
 
-### Pillars of Best Practices
+Best practices behind this principle: [AGENTS.md](#agentsmd--claudemd) · [User Prompts](#user-prompts) · [Tools](#tools) · [Knowledge](#knowledge) · [Memories](#memories) · [Current Session History](#current-session-history)
 
-Context engineering decomposes into six pillars based on what goes into the agent's context window. Each pillar has distinct best practices for keeping context focused and grounded.
+<a id="agentsmd--claudemd"></a>**📜 AGENTS.md / CLAUDE.md**
 
-#### 1. User-Controlled System Prompts
+| Best Practice | Ref |
+|---|---|
+| Have < 200 lines. Less (instructions) is more (adherence). | [claude](https://code.claude.com/docs/en/memory#write-effective-instructions) |
+| Have concise, universally applicable instructions: behavioural guidelines, project identity WHY (purpose), WHAT (tech stack, project structure), HOW (commands/instructions to do meaningful work). | [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md) |
+| Skip what the model already knows or what linters enforce. | [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md) |
+| Progressive disclosure by telling agents how to find important information. | |
 
-Persistent instruction files (AGENTS.md / CLAUDE.md) the user maintains to ground agent behavior across sessions.
+<a id="user-prompts"></a>**✏️ User Prompts**
 
-1. Keep < 200 lines - [claude](https://code.claude.com/docs/en/memory#write-effective-instructions). Less (instructions) is more (adherance).
+| Best Practice | Ref |
+|---|---|
+| Provide as much context as possible. Specify what to change, where, how to verify, and what constraints apply. Ambiguity triggers the agent to fill gaps with training-data patterns rather than project-specific intent. | |
+| Use the Interview-me pattern. Have the agent ask detailed questions about requirements, edge cases, and tradeoffs. Invert the typical prompt-response dynamic. | |
 
-2. Carefully craft concise, universally applicable instructions. Include behavioural guidelines, and project identity including WHY (purpose), WHAT (tech stack, project structure), HOW (command/instructiont to meaningful works)  - [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md).
+<a id="tools"></a>**🛠 Tools**
 
-3. Skips what the model already knows or what linters enforce - [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md)
+The executable capabilities agents invoke: bash, MCP servers, CLIs.
 
-4. Leverage progressive disclosure, by telling agents how to find important information.
+| Best Practice | Ref |
+|---|---|
+| Prefer deterministic hooks over advisory instructions. Pre/post-tool hooks for linting, formatting, and type-checking execute regardless of what the agent "remembers". Never send an LLM to do a linter's job. | |
+| Optimise tool output to be token efficient. Filter and compress verbose CLI outputs before they enter context. | [rtk](https://github.com/rtk-ai/rtk) |
 
-
-#### 2. User Prompts
-
-The task-specific instructions users give to agents for each piece of work.
-
-1. Provite as much context as possible. Specify what to change, where, how to verify, and what constraints apply. Ambiguity triggers the agent to fill gaps with training-data patterns rather than project-specific intent.
-
-2. Use Interview-me pattern. Have the agent asks detailed questions about requirements, edge cases, and tradeoffs before producing a spec document. This inverts the typical prompt-response dynamic and produces far richer specifications.
-
-
-#### 3. Tools
-
-The executable capabilities agents invoke: bash, file editing, MCP servers, linters, test runners, etc.
-
-
-1. Prefer deterministic hooks over advisory instructions. Pre/post-tool hooks for linting, formatting, and type-checking execute regardless of what the agent "remembers". Never send an LLM to do a linter's job.
-
-2. Optimise tool output to be token efficient. For example, [rtk](https://github.com/rtk-ai/rtk) filter and compress verbose CLI outputs before they enter context.
-
-#### 4. Knowledge (Docs, Facts, Wikis)
+<a id="knowledge"></a>**📚 Knowledge**
 
 Domain-specific, project-specific, and technical information agents need: internal/external documentation, code examples, API specs, architectural decisions.
 
-1. **Maintain knowledge as living artifacts**.** Stale knowledge harms more than missing knowledge. Update docs when agent failures reveal incorrect or outdated information.
+| Best Practice | Ref |
+|---|---|
+| Maintain knowledge as living artifacts. Stale knowledge harms more than missing knowledge. Update docs when agent failures reveal incorrect or outdated information. | |
+| Use Architectural Decision Records. | |
 
-2. Architectural Decision Records
-
-#### 5. Memories (Cross-Session Memory)
+<a id="memories"></a>**💾 Memories**
 
 Persistent state that accumulates across sessions: learned preferences, project context, past decisions.
 
-1. Leverage multi-tier memory system: Hot tier (loaded every session, <200 lines), warm tier (on-demand docs/), cold tier (archived records). Match access frequency to storage tier to prevent context bloat.
+| Best Practice | Ref |
+|---|---|
+| Leverage a multi-tier memory system: hot tier (loaded every session, <200 lines), warm tier (on-demand docs/), cold tier (archived records). Match access frequency to storage tier to prevent context bloat. | |
+| Promote frequently-needed insights to hot tier, enduring references to warm tier, archive the rest. Prevent knowledge accumulation from becoming context pollution. | |
+| Enforce structure on what gets stored (facts, decisions, patterns, warnings). Unstructured dumps of raw outputs cause more retrieval problems than they solve. | |
+| Scratchpad extraction at task boundaries: when transitioning tasks or sessions, extract critical facts into condensed summaries. This extends agent operational lifespan before attention degradation. | |
 
-2. Promote frequently-needed insights to hot tier, enduring references to warm tier, archive the rest. Prevent knowledge accumulation from becoming context pollution.
-
-3. Enforce structure on what gets stored (facts, decisions, patterns, warnings). Unstructured dumps of raw outputs cause more retrieval problems than they solve.
-
-4. Scratchpad extraction at task boundaries: when transitioning tasks or sessions, extract critical facts into condensed summaries. This extends agent operational lifespan before attention degradation.
-
-#### 6. Current Session History (Short-Term Memory)
+<a id="current-session-history"></a>**💬 Current Session History**
 
 The conversation history, tool outputs, and accumulated state within the active session. The most volatile and fastest-growing part of context.
 
-1. Scope one task per session. Avoid the "kitchen sink session" anti-pattern. A clean session with a precise prompt consistently outperforms a long session with accumulated corrections. 
-
-2. Proactively manage context. Use heuristic: at 0–50% usage work freely, at 50–70% pay attention, at 70–90% run compaction, at 90%+ start fresh. Don't wait for degradation symptoms like hallucinations or ignored instructions.
-
-3. Delegate to subagent investigative/research work. Their tool outputs and reasoning stay out of your main session context, preserving working memory for the primary task.
-
-4. [Experimental] Intercept and compress the accumulated session context before it reaches the model (e.g., [headroom](https://github.com/chopratejas/headroom)). 
-
-5. [Experimental] Reduce output verbosity, by instruct agents to communicate concisely. Every token of output becomes input in the next turn, compounding context growth. ([caveman](https://github.com/JuliusBrussee/caveman) is a fun experiment at this.)
+| Best Practice | Ref |
+|---|---|
+| Scope one task per session. Avoid the "kitchen sink session" anti-pattern. A clean session with a precise prompt consistently outperforms a long session with accumulated corrections. | |
+| Proactively manage context. Heuristic: at 0–50% usage work freely, at 50–70% pay attention, at 70–90% run compaction, at 90%+ start fresh. Don't wait for degradation symptoms like hallucinations or ignored instructions. | |
+| Delegate investigative/research work to subagents. Their tool outputs and reasoning stay out of your main session context, preserving working memory for the primary task. | |
+| [Experimental] Intercept and compress the accumulated session context before it reaches the model. | [headroom](https://github.com/chopratejas/headroom) |
+| [Experimental] Instruct agents to be concise. [caveman](https://github.com/JuliusBrussee/caveman) - fun experiment. |  |
 
 Coding-agent practicalities:
-- In Claude Code: `/clear` between unrelated tasks and start fresh, `/rename` to give current session a good name before clearing ,`/compact <focus>` with spec ific focus instructions, `/btw` for side-questions that don't enter history.
+- In Claude Code: `/clear` between unrelated tasks and start fresh, `/rename` to give current session a good name before clearing, `/compact <focus>` with specific focus instructions, `/btw` for side-questions that don't enter history.
 
 ## Anti-hallucination Engineering
 
