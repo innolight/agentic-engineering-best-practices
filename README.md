@@ -112,8 +112,6 @@ Verification-Driven Autonomy → confirms each subtask matches the spec
 The agent should never generate code until what-to-build is unambiguous.
 ThoughtWorks called SDD "one of the most important practices to emerge in 2025." 
 
-#### Best practices
-
 | Best Practices | Ref |
 |---|---|
 | **Plan-then-implement separation.** The industry has converged on the canonical workflow: Explore → Plan → Implement → Verify. During exploration, the agent reads code and builds understanding without making changes. During planning, it produces a written artifact that the engineer reviews and annotates. Only after plan approval does implementation begin. | |
@@ -123,8 +121,6 @@ ThoughtWorks called SDD "one of the most important practices to emerge in 2025."
 ### Structured Decomposition
 
 **The idea**: Agent failure rates scale non-linearly with task complexity. Breaking complex work into bounded, independently verifiable subtasks is the primary mechanism for keeping failure rates manageable. Beware, decomposition has diminishing returns and should match task complexity.
-
-#### Best practices
 
 | Best Practices | Ref |
 |---|---|
@@ -136,8 +132,6 @@ ThoughtWorks called SDD "one of the most important practices to emerge in 2025."
 ### Verification-Driven Autonomy
 
 **The idea**: LLMs cannot reliably self-evaluate their own outputs. Environmental feedback - compilers, tests, linters - provides ground truth that no amount of internal reasoning can substitute. Autonomy must be earned through deterministic verification, not assumed through stochastic self-reflection.
-
-#### Best practices
 
 | Best Practices | Ref |
 |---|---|
