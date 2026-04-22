@@ -116,7 +116,7 @@ ThoughtWorks called SDD "one of the most important practices to emerge in 2025."
 |---|---|
 | **Plan-then-implement separation.** The industry has converged on the canonical workflow: Explore → Plan → Implement → Verify. During exploration, the agent reads code and builds understanding without making changes. During planning, it produces a written artifact that the engineer reviews and annotates. Only after plan approval does implementation begin. | |
 | **Interview-me pattern**. Have the agent ask detailed questions about requirements, edge cases, tradeoffs. Invert the typical prompt-response dynamic. | [Claude](https://code.claude.com/docs/en/best-practices#let-claude-interview-you) |
-| **Specification as a living artifact.** Martin Fowler's team identifies three maturity levels: spec-first (written before coding), spec-anchored (maintained during development), and spec-as-source (the specification *is* the primary artifact, code is derived) | [martinfowler](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html) |
+| **Specification as artifact.** Martin Fowler's team identifies three maturity levels: spec-first (written before coding), spec-anchored (maintained during development), and spec-as-source (the specification *is* the primary artifact, code is derived) | [martinfowler](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html) |
 
 ### Structured Decomposition
 
