@@ -1,8 +1,8 @@
 # [Title of the Research Paper/Article]
 
-**Publication Date:** [YYYY-MM-DD]
-**Link**: [URL]
-**Authors/Institution:** [Authors or Institution name]
+* **Publication Date:** [YYYY-MM-DD]
+* **Link**: [URL]
+* **Authors/Institutions:** [Authors or Institution name]
 
 <!-- Prompt: Reason through the research document and help me to capture the key takeaways using the below template: -->
 
