@@ -26,10 +26,10 @@ Best practices: [AGENTS.md](#agentsmd--claudemd) · [User Prompts](#user-prompts
 
 | Best Practices | Ref |
 |---|---|
-| Have < 200 lines. Less (instructions) is more (adherence). | [claude](https://code.claude.com/docs/en/memory#write-effective-instructions) |
-| Have concise, universally applicable instructions: behavioural guidelines, project identity WHY (purpose), WHAT (tech stack, project structure), HOW (commands/instructions to do meaningful work). | [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md) |
-| Skip what the model already knows or what linters enforce. | [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md) |
-| Leverage progressive disclosure by telling agents how to find important information. | |
+| **Less (instructions) is more** (adherence). Have < 200 lines | [claude](https://code.claude.com/docs/en/memory#write-effective-instructions) |
+| **Craft concise, universally applicable instructions**: behavioural guidelines, project identity WHY (purpose), WHAT (tech stack, project structure), HOW (commands/instructions to do meaningful work). | [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md) |
+| **Leverage progressive disclosure** by telling agents how to find important information. | |
+| **Skip what the model already knows** or what linters enforce. | [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md) |
 
 <a id="user-prompts"></a>**✏️ User Prompts**
 
@@ -44,8 +44,9 @@ The executable capabilities agents invoke: bash, MCP servers, CLIs.
 
 | Best Practices | Ref |
 |---|---|
-| Deterministic hooks over instructions. Pre/post-tool hooks for linting, formatting, type-checking execute regardless of what the agent "remembers". |  |
-| Optimise tool output to be token efficient. Filter and compress verbose CLI outputs before they enter context. | [rtk](https://github.com/rtk-ai/rtk) |
+| Replace instructions with deterministic hooks when possible. Hooks for linting, formatting, type-checking execute regardless of what the agent "remembers". |  |
+| Optimise tool output to be token efficient. |  |
+| Filter and compress verbose CLI outputs before they enter context. | [rtk](https://github.com/rtk-ai/rtk) |
 
 <a id="knowledge"></a>**📚 Knowledge**
 
@@ -74,9 +75,9 @@ The conversation history, tool outputs, and accumulated state within the active 
 | Best Practices | Ref |
 |---|---|
 | **Scope one task per session**. Avoid the "kitchen sink session" anti-pattern. A clean session with a precise prompt consistently outperforms a long session with accumulated corrections. | |
-| Proactively manage context. Heuristic: at 0–50% usage work freely, at 50–70% pay attention, at 70–90% compact/hands-off, at 90%+ start fresh. Don't wait for degradation symptoms like hallucinations or ignored instructions. | |
+| **Proactively manage context**. Heuristic: at 0–50% usage work freely, 50–70% pay attention, 70–90% compact/hands-off, 90%+ start fresh. Don't wait for degradation symptoms like hallucinations or ignored instructions. | |
 | **Delegate to subagents** .e.g. investigative/research work. Their tool outputs and reasoning stay in separate context. Your main session context gets the result back. | [anthropic-doc](https://code.claude.com/docs/en/best-practices#use-subagents-for-investigation) |
-| **Rewind conversation**. Rewind to jump back to any previous message and re-prompt from there with what you learned from failed attempts. | [anthropic-team](./references/anthropic-team/20260416-claude-thariq-tips.md) · [anthropic-doc](https://code.claude.com/docs/en/best-practices#rewind-with-checkpoints) |
+| **Rewind conversation**. After a failed attempt, rewind to jump back to any previous message and re-prompt from there with what you learned. | [anthropic-team](./references/anthropic-team/20260416-claude-thariq-tips.md) · [anthropic-doc](https://code.claude.com/docs/en/best-practices#rewind-with-checkpoints) |
 | [Experimental] Intercept and compress the accumulated session context before it reaches the model. | [headroom](https://github.com/chopratejas/headroom) |
 | [Experimental] Instruct agents to communicate concisely. | [caveman](https://github.com/JuliusBrussee/caveman) |
 
