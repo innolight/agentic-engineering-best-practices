@@ -116,9 +116,8 @@ ThoughtWorks called SDD "one of the most important practices to emerge in 2025."
 
 | Best Practices | Ref |
 |---|---|
-| **Plan-then-implement separation.** The industry has converged on the canonical workflow: **Explore → Plan → Implement → Verify**. During exploration, the agent reads code and builds understanding without making changes. During planning, it produces a written artifact that the engineer reviews and annotates. Only after plan approval does implementation begin. | |
+| **Plan-then-implement separation.** The industry has converged on the canonical workflow: Explore → Plan → Implement → Verify. During exploration, the agent reads code and builds understanding without making changes. During planning, it produces a written artifact that the engineer reviews and annotates. Only after plan approval does implementation begin. | |
 | **Interview-me pattern**. Have the agent ask detailed questions about requirements, edge cases, tradeoffs. Invert the typical prompt-response dynamic. | [Claude](https://code.claude.com/docs/en/best-practices#let-claude-interview-you) |
-| **Reference-pattern anchoring.** Give agents concrete examples ("follow the pattern in X") rather than abstract descriptions. Concrete examples provide stronger conditioning signals than abstract instructions. | |
 | **Specification as a living artifact.** Martin Fowler's team identifies three maturity levels: spec-first (written before coding), spec-anchored (maintained during development), and spec-as-source (the specification *is* the primary artifact, code is derived) | [martinfowler](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html) |
 
 ### Structured Decomposition
@@ -129,8 +128,8 @@ ThoughtWorks called SDD "one of the most important practices to emerge in 2025."
 
 | Best Practices | Ref |
 |---|---|
-| **Right-sized decomposition.** If you can describe the desired diff in one sentence, skip the planning overhead. If the task touches multiple files or you're uncertain about the approach, decompose and plan. Taxonomy: narrow tasks (agent handles alone), context-dependent tasks (needs project context), architectural tasks (requires human guidance). | |
-| **Verifiable subtask boundaries.** Each subtask should have clear success criteria that can be checked independently. This transforms one high-stakes verification at the end into many low-stakes verifications throughout. | |
+| **Right-sized decomposition.** If you can describe the desired diff in one sentence, skip the planning overhead. If the task touches multiple files or you're uncertain about the approach, decompose and plan. | |
+| **Verifiable subtask boundaries.** Each subtask has clear success criteria to be checked independently. This transforms one high-stakes verification at the end into many low-stakes verifications throughout. | |
 | **Planner-worker separation.** The planner generates a multi-step plan with dependencies; workers execute individual steps in bounded context. Achieves up to 90% cost reduction by using frontier models only for planning. | |
 | **File-based state persistence.** Use plan.md/progress.md to bridge across context windows. The agent reads the spec, checks the plan for the current task, executes, updates the plan, and terminates. | |
 
@@ -143,8 +142,8 @@ ThoughtWorks called SDD "one of the most important practices to emerge in 2025."
 | Best Practices | Ref |
 |---|---|
 | **Multi-layer verification pipeline.** No single verification method catches all failure modes. Multiple layers of deterministics verification are needed: type checking → (unit/integration/e2e) tests → static analysis → formatting → linting → security scanning → agents review → human review. | |
-| **TDD - Test Driven Development.** Tests anchor the specification, preventing agents from drifting into plausible-but-wrong code. Tests creates automated feedback loop for agent to self-correct against each iteration. Tests enforce creation of testable, maintainable design. | |
+| **TDD - Test Driven Development.** Tests anchor the specification, create automated feedback loop for agent to self-correct, enforce creation of testable, maintainable design. | |
 | **Separate agent reviewers** (same or different models) catch problems more reliably than self-assessment. A fresh context window avoids biases accumulated during implementation. | |
-| **Continuous verification during implementation.** Run type checking, linting, targeted tests,... after each meaningful change, not just at the end. Catch drift early before errors compound. Hooks provide deterministic, automated enforcement that doesn't depend on what the agent "remembers". | |
+| **Continuous verification during implementation.** Run type checking, linting, targeted tests,... after each meaningful change, not just at the end. | |
 | **Atomic commits**: each commit represents a single, self-contained, verified logical change to the codebase. | |
 
