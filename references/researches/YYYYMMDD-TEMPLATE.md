@@ -4,28 +4,23 @@
 **Link**: [URL]
 **Authors/Institution:** [Authors or Institution name]
 
-## Actionable insights
+<!-- Prompt: Reason through the research document and help me to capture the key takeaways using the below template: -->
 
-### 1. [Title of First Major Insight]
-[Briefly describe the context or the overarching finding for this insight.]
-* **Insight**: [Detailed explanation of what the research discovered in this area.]
+## Actionable Insights
+
+### N. [Title of Key Major Insights]
+
+* **Insight**: [Concise explanation of what the research discovered in this area.]
 * **Action**: [Specific, actionable recommendation for applying this finding in practice (e.g., agentic workflows, prompt engineering, orchestration, security, architecture).]
 
-### 2. [Title of Second Major Insight]
-[Briefly describe the context or the overarching finding for this insight.]
-* **Insight**: [Detailed explanation of what the research discovered in this area.]
-* **Action**: [Specific, actionable recommendation for applying this finding in practice (e.g., agentic workflows, prompt engineering, orchestration, security, architecture).]
 
-## Core Concepts & Taxonomy & Relationship
+## Core Concepts & Patterns & Taxonomy
 
-[Use this section to categorize the theoretical frameworks, classifications, or patterns identified in the research.]
+[Use this section to categorize the theoretical frameworks, classifications, or patterns identified in the research. Use table format for compact, multi dimentional deepdive of concepts]
 
-### 1. [Concept/Classification Category]
-[Describe the concept or how the research classifies specific behaviors or entities.]
-* **[Sub-classification/Type 1]**: [Details and specific characteristics.]
-* **[Sub-classification/Type 2]**: [Details and specific characteristics.]
+### N. [Standalone Concept/Pattern or Taxonomy of concepts/patterns]
 
-### 2. [Relationships/Correlations]
-[Explain how different variables or attributes relate to one another according to the findings.]
-* **[Observation 1]**: [Detail on the relationship.]
-* **[Observation 2]**: [Detail on the relationship.]
+[Describe the concepts or how the research classifies specific behaviors or entities.]
+
+
+
