@@ -20,7 +20,7 @@ This project aims to distill the best practices for Agentic Engineering from the
 - **Primacy effect**: instructions earlier in context receive more attention. Instruction adherence dips lowest for instructions buried at the center. ([ref](references/researches/20250725-arxiv-2507.11538-how-many-instruction-can-llm-follow-at-once.md))
 - **Silent omissions**: when overloaded, models silently drop instructions entirely rather than misapply them. ([ref](references/researches/20250725-arxiv-2507.11538-how-many-instruction-can-llm-follow-at-once.md))
 
-Best practices: [AGENTS.md](#agentsmd--claudemd) · [User Prompts](#user-prompts) · [Tools](#tools) · [Knowledge](#knowledge) · [Memories](#memories) · [Current Conversation](#current-conversation)
+See best practices for: [AGENTS.md](#agentsmd--claudemd) · [User Prompts](#user-prompts) · [Tools](#tools) · [Current Conversation](#current-conversation) · [Knowledge](#knowledge) · [Memories](#memories)
 
 <a id="agentsmd--claudemd"></a>**📜 AGENTS.md / CLAUDE.md**
 
@@ -48,6 +48,20 @@ The executable capabilities agents invoke: bash, MCP servers, CLIs.
 | Optimise tool output to be token efficient. |  |
 | Filter and compress verbose CLI outputs before they enter context. | [rtk](https://github.com/rtk-ai/rtk) |
 
+
+<a id="current-conversation"></a>**💬 Current Consersation**
+
+The conversation history, tool outputs, and accumulated state within the active session. The most volatile and fastest-growing part of context.
+
+| Best Practices | Ref |
+|---|---|
+| **Scope one task per session**. Avoid the "kitchen sink session" anti-pattern. A clean session with a precise prompt consistently outperforms a long session with accumulated corrections. | |
+| **Proactively manage context**. Heuristic: at 0–50% usage work freely, 50–70% pay attention, 70–90% compact/hands-off, 90%+ start fresh. Don't wait for degradation symptoms like hallucinations or ignored instructions. | |
+| **Delegate to subagents** .e.g. investigative/research work. Their tool outputs and reasoning stay in separate context. Your main session context gets the result back. | [anthropic-doc](https://code.claude.com/docs/en/best-practices#use-subagents-for-investigation) |
+| **Rewind conversation**. After a failed attempt, rewind to jump back to any previous message and re-prompt from there with what you learned. | [anthropic-team](./references/anthropic-team/20260416-claude-thariq-tips.md) · [anthropic-doc](https://code.claude.com/docs/en/best-practices#rewind-with-checkpoints) |
+| [Experimental] Intercept and compress the accumulated session context before it reaches the model. | [headroom](https://github.com/chopratejas/headroom) |
+| [Experimental] Instruct agents to communicate concisely. | [caveman](https://github.com/JuliusBrussee/caveman) |
+
 <a id="knowledge"></a>**📚 Knowledge**
 
 Domain-specific, project-specific, and technical information agents need: internal/external documentation, code examples, API specs, architectural decisions.
@@ -68,29 +82,16 @@ Persistent state that accumulates across sessions: learned preferences, project 
 | Enforce structure on what gets stored (facts, decisions, patterns, warnings). Unstructured dumps of raw outputs cause more retrieval problems than they solve. | |
 | Scratchpad extraction at task boundaries: when transitioning tasks or sessions, extract critical facts into condensed summaries. This extends agent operational lifespan before attention degradation. | |
 
-<a id="current-conversation"></a>**💬 Current Consersation**
-
-The conversation history, tool outputs, and accumulated state within the active session. The most volatile and fastest-growing part of context.
-
-| Best Practices | Ref |
-|---|---|
-| **Scope one task per session**. Avoid the "kitchen sink session" anti-pattern. A clean session with a precise prompt consistently outperforms a long session with accumulated corrections. | |
-| **Proactively manage context**. Heuristic: at 0–50% usage work freely, 50–70% pay attention, 70–90% compact/hands-off, 90%+ start fresh. Don't wait for degradation symptoms like hallucinations or ignored instructions. | |
-| **Delegate to subagents** .e.g. investigative/research work. Their tool outputs and reasoning stay in separate context. Your main session context gets the result back. | [anthropic-doc](https://code.claude.com/docs/en/best-practices#use-subagents-for-investigation) |
-| **Rewind conversation**. After a failed attempt, rewind to jump back to any previous message and re-prompt from there with what you learned. | [anthropic-team](./references/anthropic-team/20260416-claude-thariq-tips.md) · [anthropic-doc](https://code.claude.com/docs/en/best-practices#rewind-with-checkpoints) |
-| [Experimental] Intercept and compress the accumulated session context before it reaches the model. | [headroom](https://github.com/chopratejas/headroom) |
-| [Experimental] Instruct agents to communicate concisely. | [caveman](https://github.com/JuliusBrussee/caveman) |
-
 Coding-agent practicalities:
 - In Claude Code: `/clear` between unrelated tasks and start fresh, `/rename` to give current session a good name before clearing, `/compact <focus>` with specific focus instructions, `/btw` for side-questions that don't enter history.
 
 ## Anti-hallucination Engineering
 
-**Anti-hallucination Engineering Principle**: tame the probabilistic/stochastic nature of LLMs through specification, decomposition, and verifications.
+_Principle_: tame the probabilistic/stochastic nature of LLMs through specification, decomposition, and verifications.
 
-**The truth:** LLMs optimize for plausibility, not correctness. When a prompt is ambiguous, the model fills gaps with common patterns from training data rather than project-specific intent. The quality of agent output is bounded by the precision of the input specification and the rigor of the verification loop. Premature coding is the dominant failure mode.
+_The truth_: LLMs optimize for plausibility, not correctness. When a prompt is ambiguous, the model fills gaps with common patterns from training data rather than project-specific intent. The quality of agent output is bounded by the precision of the input specification and the rigor of the verification loop. Premature coding is the dominant failure mode.
 
-**Research insights**
+_Research insights_:
 - The Columbia University DAPLab found that agents "prioritize runnable code over correctness." They generate something that compiles but silently ignores existing patterns, duplicates logic, or violates conventions.
 - The ACONIC framework (Wei et al., 2025) demonstrated that formalizing task specifications improved agent performance by **10–40 percentage points** on complex tasks.
 - Teams using AI without quality guardrails report a **35–40% increase in bug density** within six months (Qodo 2025).
@@ -147,12 +148,11 @@ ThoughtWorks called SDD "one of the most important practices to emerge in 2025."
 
 - **Multi-layer verification pipeline.** No single verification method catches all failure modes. Multiple layers of deterministics verification are needed: type checking → (unit/integration/e2e) tests → static analysis → formatting → linting → security scanning → agents review → human review. 
 
-- **TDD - Test Driven Development.** Tests anchor the specification, preventing agents from drifting into plausible-but-wrong code. Tests creates automated feedback loop for agent to self-correct against each iteration. Tests enforce creation of testable, thus maintainable design.
+- **TDD - Test Driven Development.** Tests anchor the specification, preventing agents from drifting into plausible-but-wrong code. Tests creates automated feedback loop for agent to self-correct against each iteration. Tests enforce creation of testable, maintainable design.
 
 - **Separate agent reviewers** (same or different models) catch problems more reliably than self-assessment. A fresh context window avoids biases accumulated during implementation.
 
-- **Continuous verification during implementation.** Run type checking, linting, targeted tests,... after each meaningful change, not just at the end. Catch drift early before errors compound.
-    - Hooks provide deterministic, automated enforcement that doesn't depend on what the agent "remembers".
+- **Continuous verification during implementation.** Run type checking, linting, targeted tests,... after each meaningful change, not just at the end. Catch drift early before errors compound. Hooks provide deterministic, automated enforcement that doesn't depend on what the agent "remembers".
 
 - **Atomic commits**: each commit represents a single, self-contained, verified logical change to the codebase.
 
