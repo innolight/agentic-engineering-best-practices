@@ -16,8 +16,9 @@ This project aims to distill the best practices for Agentic Engineering from the
 **The truth:** AI Agent performance is a function of what's in the finite context window - and performance degrades non-linearly as context fills. Managing context is the primary engineering challenge of agentic workflows. 
 
 **Research insights**
-- Anthropic's official docs: "Most best practices are based on one constraint: Claude's context window fills up fast, and performance degrades as it fills."
-- The "lost-in-the-middle" phenomenon, where models lose factual precision near maximum capacity, is well-documented in research. 
+- **Reasoning rot**: instruction adherence degrades in three patterns - reasoning models plateau near-perfect adherence to ~150 instructions then collapse, frontier models decay linearly per instruction, small models fail catastrophically at 20-50 instructions. ([ref](references/researches/20250725-arxiv-2507.11538-how-many-instruction-can-llm-follow-at-once.md))
+- **Primacy effect**: instructions earlier in context receive more attention. Instruction adherence dips lowest for instructions buried at the center. ([ref](references/researches/20250725-arxiv-2507.11538-how-many-instruction-can-llm-follow-at-once.md))
+- **Silent omissions**: when overloaded, models silently drop instructions entirely rather than misapply them. ([ref](references/researches/20250725-arxiv-2507.11538-how-many-instruction-can-llm-follow-at-once.md))
 
 Best practices: [AGENTS.md](#agentsmd--claudemd) · [User Prompts](#user-prompts) · [Tools](#tools) · [Knowledge](#knowledge) · [Memories](#memories) · [Current Conversation](#current-conversation)
 
@@ -28,7 +29,7 @@ Best practices: [AGENTS.md](#agentsmd--claudemd) · [User Prompts](#user-prompts
 | Have < 200 lines. Less (instructions) is more (adherence). | [claude](https://code.claude.com/docs/en/memory#write-effective-instructions) |
 | Have concise, universally applicable instructions: behavioural guidelines, project identity WHY (purpose), WHAT (tech stack, project structure), HOW (commands/instructions to do meaningful work). | [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md) |
 | Skip what the model already knows or what linters enforce. | [humanlayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md) |
-| Progressive disclosure by telling agents how to find important information. | |
+| Leverage progressive disclosure by telling agents how to find important information. | |
 
 <a id="user-prompts"></a>**✏️ User Prompts**
 
