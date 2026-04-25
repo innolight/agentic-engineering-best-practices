@@ -4,6 +4,7 @@
 * **Link**: [URL]
 * **Authors/Institutions:** [Authors or Institution name]
 
+<!-- Regex to remove citation: \[cite(?:_start|:\s*\d+(?:,\s*\d+)*)\s*\] -->
 <!-- Prompt: Reason through the research document and help me to capture the key takeaways using the below template: -->
 
 ## Actionable Insights
